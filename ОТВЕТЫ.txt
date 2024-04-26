@@ -1,0 +1,56 @@
+Задание 1
+SELECT c.login, COUNT(o.id) AS orders_in_delivery FROM “Orders” AS o JOIN “Orders” AS o ON c.id = o.courierId WHERE o.inDelivery = true GROUP BY c.login;
+
+
+Задание 2
+SELECT track, CASE WHEN finished == true THEN 2 WHEN cancelled == true THEN -1 WHEN inDelivery == true THEN 1 ELSE 0 END AS status FROM “Orders";
+
+
+Задание 3
+import requests
+import json
+
+# Адрес сервера и пути к API
+BASE_URL = "http://your-api-server.com"
+CREATE_ORDER_PATH = "/create_order"
+GET_ORDER_PATH = "/get_order"
+
+def create_order(data):
+    # Выполнение запроса на создание заказа
+    response = requests.post(f"{BASE_URL}{CREATE_ORDER_PATH}", json=data)
+    return response
+
+def get_order_by_track(track_number):
+    # Выполнение запроса на получение заказа по треку
+    response = requests.get(f"{URL}{GET_ORDER_PATH}?track={track_number}")
+    return response
+
+def test_order_creation_and_retrieval():
+    # Данные для создания заказа
+    order_data = {
+        "customer_name": "Test User",
+        "items": [{"product_id": 1, "quantity": 2}],
+        # Другие данные заказа...
+    }
+
+    # Создание заказа
+    create_order_response = create_order(order_data)
+    
+    # Проверка, что заказ создан успешно (пример: код ответа 201)
+    assert create_order_response.status_code == 201, f"Unexpected status code: {create_order_response.status_code}"
+
+    # Получение номера трека из ответа
+    response_data = json.loads(create_order_response.text)
+    track_number = response_data.get("track_number")
+    
+    # Получение заказа по треку
+    get_order_response = get_order_by_track(track_number)
+    
+    # Проверка, что заказ получен успешно (пример: код ответа 200)
+    assert get_order_response.status_code == 200, f"Unexpected status code: {get_order_response.status_code}"
+
+    # Дополнительные проверки данных заказа (если необходимо)
+    # ...
+
+# Запуск автотеста
+test_order_creation_and_retrieval()
